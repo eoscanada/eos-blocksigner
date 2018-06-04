@@ -1,0 +1,43 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "dJJGM7A34ll4cCn7jiC1zNp61LM=",
+			"path": "github.com/eoscanada/eos-go",
+			"revision": "f03a3441b142a448b8d1be295019ec57820f1379",
+			"revisionTime": "2018-06-04T14:47:40Z"
+		},
+		{
+			"checksumSHA1": "mbdurDenl8bhRVVu8ixJw70fi5E=",
+			"path": "github.com/eoscanada/eos-go/btcsuite/btcd/btcec",
+			"revision": "f03a3441b142a448b8d1be295019ec57820f1379",
+			"revisionTime": "2018-06-04T14:47:40Z"
+		},
+		{
+			"checksumSHA1": "9CdGdJ/+qjIwCfyoxoB3JxNtdyg=",
+			"path": "github.com/eoscanada/eos-go/btcsuite/btcutil",
+			"revision": "f03a3441b142a448b8d1be295019ec57820f1379",
+			"revisionTime": "2018-06-04T14:47:40Z"
+		},
+		{
+			"checksumSHA1": "VkjW+vswsv7J0PX2UFqqg+/RVgs=",
+			"path": "github.com/eoscanada/eos-go/btcsuite/btcutil/base58",
+			"revision": "f03a3441b142a448b8d1be295019ec57820f1379",
+			"revisionTime": "2018-06-04T14:47:40Z"
+		},
+		{
+			"checksumSHA1": "Prj/mEIP4L5aX+Kwis+lhBklBOE=",
+			"path": "github.com/eoscanada/eos-go/ecc",
+			"revision": "f03a3441b142a448b8d1be295019ec57820f1379",
+			"revisionTime": "2018-06-04T14:47:40Z"
+		},
+		{
+			"checksumSHA1": "TQoVgHqUD72/5ALzi9p5W3oyaug=",
+			"path": "golang.org/x/crypto/ripemd160",
+			"revision": "4ec37c66abab2c7e02ae775328b2ff001c3f025a",
+			"revisionTime": "2018-05-05T00:22:42Z"
+		}
+	],
+	"rootPath": "github.com/eoscanada/eos-kms-block-signer"
+}
