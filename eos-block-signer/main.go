@@ -1,28 +1,45 @@
 package main
 
 import (
-	"net/http"
-	"fmt"
 	"encoding/hex"
-	"github.com/eoscanada/eos-go/ecc"
 	"encoding/json"
-	"log"
 	"flag"
-	"github.com/eoscanada/eos-go"
+	"fmt"
+	"log"
+	"net/http"
+
+	"os"
+
+	"github.com/eoscanada/eos-go/ecc"
+	eosvault "github.com/eoscanada/eosc/vault"
+	"github.com/spf13/viper"
 )
 
-var keysFile = flag.String("keys-file", "", "P2P socket connection")
+var keysFile = flag.String("wallet-file", "", "wallet file")
 var port = flag.Int("port", 6666, "listening port")
 
 func main() {
 
 	flag.Parse()
 
-	keyBag := eos.NewKeyBag()
-	err := keyBag.ImportFromFile(*keysFile)
-	if err != nil {
-		log.Fatal("Importing keys: ", err)
+	walletFile := viper.GetString("vault-file")
+	if _, err := os.Stat(walletFile); err != nil {
+		log.Fatalf("Error: wallet file %q missing, ", walletFile)
 	}
+
+	vault, err := eosvault.NewVaultFromWalletFile(walletFile)
+	if err != nil {
+		log.Fatalf("Error: loading vault, %s", err)
+	}
+
+	boxer, err := eosvault.SecretBoxerForType(vault.SecretBoxWrap)
+	if err != nil {
+		log.Fatalf("secret boxer, %s", err)
+	}
+
+	vault.Open(boxer)
+
+	keyBag := vault.KeyBag
 
 	http.HandleFunc("/v1/wallet/sign_digest", func(w http.ResponseWriter, r *http.Request) {
 
