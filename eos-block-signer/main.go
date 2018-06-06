@@ -10,10 +10,12 @@ import (
 
 	"os"
 
+	"github.com/eoscanada/eos-go"
 	"github.com/eoscanada/eos-go/ecc"
 	eosvault "github.com/eoscanada/eosc/vault"
 )
 
+var keysFile = flag.String("keys-file", "", "keys file")
 var walletFile = flag.String("wallet-file", "", "wallet file")
 var port = flag.Int("port", 6666, "listening port")
 
@@ -21,23 +23,43 @@ func main() {
 
 	flag.Parse()
 
-	if _, err := os.Stat(*walletFile); err != nil {
-		log.Fatalf("Error: wallet file %q missing, ", walletFile)
+	if *keysFile != "" && *walletFile != "" {
+		log.Fatal("--keys-file and --wallet-file should not be use together")
 	}
 
-	vault, err := eosvault.NewVaultFromWalletFile(*walletFile)
-	if err != nil {
-		log.Fatalf("Error: loading vault, %s", err)
+	if *keysFile == "" && *walletFile == "" {
+		log.Fatal("Require one of flags --keys-file and --wallet-file")
 	}
 
-	boxer, err := eosvault.SecretBoxerForType(vault.SecretBoxWrap)
-	if err != nil {
-		log.Fatalf("secret boxer, %s", err)
+	var keyBag *eos.KeyBag
+	if *walletFile != "" {
+		if _, err := os.Stat(*walletFile); err != nil {
+			log.Fatalf("Error: wallet file %q missing, ", walletFile)
+		}
+
+		vault, err := eosvault.NewVaultFromWalletFile(*walletFile)
+		if err != nil {
+			log.Fatalf("Error: loading vault, %s", err)
+		}
+
+		boxer, err := eosvault.SecretBoxerForType(vault.SecretBoxWrap)
+		if err != nil {
+			log.Fatalf("secret boxer, %s", err)
+		}
+
+		vault.Open(boxer)
+
+		keyBag = vault.KeyBag
+
 	}
 
-	vault.Open(boxer)
-
-	keyBag := vault.KeyBag
+	if *keysFile != "" {
+		keyBag = eos.NewKeyBag()
+		err := keyBag.ImportFromFile(*keysFile)
+		if err != nil {
+			log.Fatalf("import keys from file, %s", err)
+		}
+	}
 
 	http.HandleFunc("/v1/wallet/sign_digest", func(w http.ResponseWriter, r *http.Request) {
 

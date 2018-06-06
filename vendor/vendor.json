@@ -3,7 +3,7 @@
 	"ignore": "test",
 	"package": [
 		{
-			"checksumSHA1": "dJJGM7A34ll4cCn7jiC1zNp61LM=",
+			"checksumSHA1": "+ru60xG5Wf3TMKA4LdXePMojZww=",
 			"path": "github.com/eoscanada/eos-go",
 			"revision": "f03a3441b142a448b8d1be295019ec57820f1379",
 			"revisionTime": "2018-06-04T14:47:40Z"
@@ -33,10 +33,10 @@
 			"revisionTime": "2018-06-04T14:47:40Z"
 		},
 		{
-			"checksumSHA1": "nVfI5CJRLE8CDvoybxtxGTmASA0=",
+			"checksumSHA1": "0M9AM99VOyzGPVtIvS5lytYroZk=",
 			"path": "github.com/eoscanada/eosc/vault",
-			"revision": "77a382eca3c0cfb8a7dcd3cdcbb1b5faa6b5e890",
-			"revisionTime": "2018-06-06T00:09:50Z"
+			"revision": "79f65663b31112c89df47dea9c37f192b000857b",
+			"revisionTime": "2018-06-06T13:15:15Z"
 		},
 		{
 			"checksumSHA1": "TQoVgHqUD72/5ALzi9p5W3oyaug=",
