@@ -5,12 +5,12 @@ ENV PKG /root/go/src/github.com/eoscanada/eos-blocksigner
 RUN mkdir -p $PKG
 COPY . $PKG
 RUN cd $PKG \
-    && go get -v -t ./eos-block-signer
+    && go get -v -t ./eos-blocksigner
 
-RUN cd $PKG/eos-kms-block-signer \
+RUN cd $PKG/eos-blocksigner \
     && go test -v \
-    && go build -v  -o /eos-block-signer
+    && go build -v -o /eos-blocksigner
 
+# Final image
 FROM busybox
-
-COPY --from=builder /eos-block-signer /app/eos-block-signer
+COPY --from=builder /eos-blocksigner /app/eos-blocksigner

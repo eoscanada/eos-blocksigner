@@ -4,12 +4,12 @@ steps:
   name: gcr.io/cloud-builders/docker
   args: [
     'build',
-    '-t', 'gcr.io/$PROJECT_ID/eos-block-signer:$COMMIT_SHA',
-    '-t', 'gcr.io/$PROJECT_ID/eos-block-signer:latest',
+    '-t', 'gcr.io/$PROJECT_ID/eos-blocksigner:$COMMIT_SHA',
+    '-t', 'gcr.io/$PROJECT_ID/eos-blocksigner:latest',
     '-f', 'Dockerfile',
     '.'
   ]
 
 images:
-- gcr.io/$PROJECT_ID/eos-kms-block-signer:latest
-- gcr.io/$PROJECT_ID/eos-kms-block-signer:$COMMIT_SHA
+- gcr.io/$PROJECT_ID/eos-blocksigner:latest
+- gcr.io/$PROJECT_ID/eos-blocksigner:$COMMIT_SHA
