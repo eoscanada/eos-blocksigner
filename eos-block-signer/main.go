@@ -61,6 +61,10 @@ func main() {
 		}
 	}
 
+	http.HandleFunc("/v1/wallet/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+	})
+
 	http.HandleFunc("/v1/wallet/sign_digest", func(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Print("Signing digest... ")
