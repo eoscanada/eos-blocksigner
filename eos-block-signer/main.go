@@ -12,22 +12,20 @@ import (
 
 	"github.com/eoscanada/eos-go/ecc"
 	eosvault "github.com/eoscanada/eosc/vault"
-	"github.com/spf13/viper"
 )
 
-var keysFile = flag.String("wallet-file", "", "wallet file")
+var walletFile = flag.String("wallet-file", "", "wallet file")
 var port = flag.Int("port", 6666, "listening port")
 
 func main() {
 
 	flag.Parse()
 
-	walletFile := viper.GetString("vault-file")
-	if _, err := os.Stat(walletFile); err != nil {
+	if _, err := os.Stat(*walletFile); err != nil {
 		log.Fatalf("Error: wallet file %q missing, ", walletFile)
 	}
 
-	vault, err := eosvault.NewVaultFromWalletFile(walletFile)
+	vault, err := eosvault.NewVaultFromWalletFile(*walletFile)
 	if err != nil {
 		log.Fatalf("Error: loading vault, %s", err)
 	}
