@@ -66,6 +66,16 @@ func main() {
 		w.WriteHeader(200)
 	})
 
+	http.HandleFunc("/v1/wallet/get_public_keys", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Handling get_public_keys")
+
+		var out []string
+		for _, key := range keyBag.Keys {
+			out = append(out, key.PublicKey().String())
+		}
+		json.NewEncoder(w).Encode(out)
+	})
+
 	http.HandleFunc("/v1/wallet/sign_digest", func(w http.ResponseWriter, r *http.Request) {
 
 		var inputs []string
