@@ -20,7 +20,6 @@ var walletFile = flag.String("wallet-file", "", "wallet file")
 var port = flag.Int("port", 6666, "listening port")
 
 func main() {
-
 	flag.Parse()
 
 	if *keysFile != "" && *walletFile != "" {
@@ -34,30 +33,31 @@ func main() {
 	var keyBag *eos.KeyBag
 	if *walletFile != "" {
 		if _, err := os.Stat(*walletFile); err != nil {
-			log.Fatalf("Error: wallet file %q missing, ", walletFile)
+			log.Fatalf("Error: wallet file %q missing", walletFile)
 		}
 
 		vault, err := eosvault.NewVaultFromWalletFile(*walletFile)
 		if err != nil {
-			log.Fatalf("Error: loading vault, %s", err)
+			log.Fatalf("Error: loading vault: %s", err)
 		}
 
 		boxer, err := eosvault.SecretBoxerForType(vault.SecretBoxWrap)
 		if err != nil {
-			log.Fatalf("secret boxer, %s", err)
+			log.Fatalf("Error: secret boxer: %s", err)
 		}
 
-		vault.Open(boxer)
+		if err := vault.Open(boxer); err != nil {
+			log.Fatalf("Error: open vault: %s", err)
+		}
 
 		keyBag = vault.KeyBag
-
 	}
 
 	if *keysFile != "" {
 		keyBag = eos.NewKeyBag()
-		err := keyBag.ImportFromFile(*keysFile)
-		if err != nil {
-			log.Fatalf("import keys from file, %s", err)
+
+		if err := keyBag.ImportFromFile(*keysFile); err != nil {
+			log.Fatalf("Error: import keys from file: %s", err)
 		}
 	}
 
@@ -72,40 +72,42 @@ func main() {
 		var inputs []string
 		if err := json.NewDecoder(r.Body).Decode(&inputs); err != nil {
 			fmt.Println("sign_digest: error:", err)
-			http.Error(w, "couldn't decode input", 500)
+			http.Error(w, "couldn't decode input params", 500)
 			return
 		}
 
 		digest, err := hex.DecodeString(inputs[0])
 		if err != nil {
-			fmt.Println("digest decode : error:", err)
+			fmt.Println("digest decode: error:", err)
 			http.Error(w, "couldn't decode digest", 500)
 		}
 
 		pubKey, err := ecc.NewPublicKey(inputs[1])
 		if err != nil {
-			fmt.Println("public key : error:", err)
+			fmt.Println("public key: error:", err)
 			http.Error(w, "couldn't decode public key", 500)
 		}
 
 		signed, err := keyBag.SignDigest(digest, pubKey)
 		if err != nil {
-			fmt.Println("signing : error:", err)
-			http.Error(w, fmt.Sprintf("error signing: %s", err), 500)
+			fmt.Println("signing: error:", err)
+			http.Error(w, "signing error", 500)
 			return
 		}
 
 		w.WriteHeader(201)
-		_ = json.NewEncoder(w).Encode(signed)
-
-		fmt.Println("done")
-
+		err = json.NewEncoder(w).Encode(signed)
+		if err != nil {
+			fmt.Println("encoding error:", err)
+		} else {
+			fmt.Println("done")
+		}
 	})
 
 	address := "127.0.0.1"
 	listeningOn := fmt.Sprintf("%s:%d", address, *port)
 	fmt.Printf("Listening for wallet operations on %s\n", listeningOn)
-	if err := http.ListenAndServe(fmt.Sprintf("%s", listeningOn), nil); err != nil {
+	if err := http.ListenAndServe(listeningOn, nil); err != nil {
 		log.Printf("Failed listening on port %s: %s\n", listeningOn, err)
 	}
 }
