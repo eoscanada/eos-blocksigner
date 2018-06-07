@@ -17,6 +17,7 @@ import (
 
 var keysFile = flag.String("keys-file", "", "keys file")
 var walletFile = flag.String("wallet-file", "", "wallet file")
+var kmsGCPKeypath = flag.String("kms-gcp-keypath", "", "cryptoKeys path to GCP's KMS system")
 var port = flag.Int("port", 6666, "listening port")
 
 func main() {
@@ -41,7 +42,7 @@ func main() {
 			log.Fatalf("Error: loading vault: %s", err)
 		}
 
-		boxer, err := eosvault.SecretBoxerForType(vault.SecretBoxWrap)
+		boxer, err := eosvault.SecretBoxerForType(vault.SecretBoxWrap, *kmsGCPKeypath)
 		if err != nil {
 			log.Fatalf("Error: secret boxer: %s", err)
 		}
