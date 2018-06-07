@@ -9,5 +9,6 @@ RUN cd $PKG \
     && go build -v -o /eos-blocksigner
 
 # Final image
-FROM busybox
+FROM alpine
+RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 COPY --from=builder /eos-blocksigner /app/eos-blocksigner
