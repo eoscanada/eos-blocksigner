@@ -49,15 +49,15 @@ var TypeSize = struct {
 	Bool:           1,
 }
 
-var RegisteredActions = map[AccountName]map[ActionName]reflect.Type{}
+var registeredActions = map[AccountName]map[ActionName]reflect.Type{}
 
 // Registers Action objects..
 func RegisterAction(accountName AccountName, actionName ActionName, obj interface{}) {
 	// TODO: lock or som'th.. unless we never call after boot time..
-	if RegisteredActions[accountName] == nil {
-		RegisteredActions[accountName] = make(map[ActionName]reflect.Type)
+	if registeredActions[accountName] == nil {
+		registeredActions[accountName] = make(map[ActionName]reflect.Type)
 	}
-	RegisteredActions[accountName][actionName] = reflect.TypeOf(obj)
+	registeredActions[accountName][actionName] = reflect.TypeOf(obj)
 }
 
 // Decoder implements the EOS unpacking, similar to FC_BUFFER
@@ -575,7 +575,7 @@ func (d *Decoder) readAsset() (out Asset, err error) {
 
 func (d *Decoder) readActionData(action *Action) (err error) {
 
-	actionMap := RegisteredActions[action.Account]
+	actionMap := registeredActions[action.Account]
 
 	var decodeInto reflect.Type
 	if actionMap != nil {
