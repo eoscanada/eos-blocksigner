@@ -68,8 +68,6 @@ func main() {
 
 	http.HandleFunc("/v1/wallet/sign_digest", func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Print("Signing digest... ")
-
 		var inputs []string
 		if err := json.NewDecoder(r.Body).Decode(&inputs); err != nil {
 			fmt.Println("sign_digest: error:", err)
@@ -95,6 +93,8 @@ func main() {
 			http.Error(w, "signing error", 500)
 			return
 		}
+
+		fmt.Printf("Signing digest %q with %s... ", hex.EncodeToString(digest), pubKey)
 
 		w.WriteHeader(201)
 		err = json.NewEncoder(w).Encode(signed)
