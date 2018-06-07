@@ -47,14 +47,14 @@
 		{
 			"checksumSHA1": "D+SAQfV+MZKgAIghRmsyAHL+BA4=",
 			"path": "github.com/eoscanada/eosc/cli",
-			"revision": "9557dfaf51160cc3c94c5345c9ac13b24d22619c",
-			"revisionTime": "2018-06-07T17:31:11Z"
+			"revision": "8ff7bc40cb57ea7c00f903c8d2e51e529ab27e72",
+			"revisionTime": "2018-06-07T18:50:02Z"
 		},
 		{
-			"checksumSHA1": "b3al8s03DxP22Pk6z8F4MIFSumc=",
+			"checksumSHA1": "fsw9IKG8g0IlySmX7+g6k3Xvd/c=",
 			"path": "github.com/eoscanada/eosc/vault",
-			"revision": "9557dfaf51160cc3c94c5345c9ac13b24d22619c",
-			"revisionTime": "2018-06-07T17:31:11Z"
+			"revision": "8ff7bc40cb57ea7c00f903c8d2e51e529ab27e72",
+			"revisionTime": "2018-06-07T18:50:02Z"
 		},
 		{
 			"checksumSHA1": "7NP1qUMF8Kx1y0zANxx0e+oq9Oo=",
