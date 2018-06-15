@@ -65,6 +65,9 @@ $ eos-blocksigner --wallet-path path/to/eosc-vault.json \
 Listening on 127.0.0.1:6666
 ```
 
+You will need the _Decrypt_ KMS scopes on your servers to handle
+decryption of the vault.
+
 
 ## Plain-text private keys file
 
