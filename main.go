@@ -73,7 +73,8 @@ func main() {
 		for _, key := range keyBag.Keys {
 			out = append(out, key.PublicKey().String())
 		}
-		json.NewEncoder(w).Encode(out)
+
+		_ = json.NewEncoder(w).Encode(out)
 	})
 
 	http.HandleFunc("/v1/wallet/sign_digest", func(w http.ResponseWriter, r *http.Request) {
@@ -117,7 +118,7 @@ func main() {
 
 	address := "127.0.0.1"
 	listeningOn := fmt.Sprintf("%s:%d", address, *port)
-	fmt.Printf("Listening for wallet operations on %s\n", listeningOn)
+	fmt.Printf("Listening for block signing operations on %s\n", listeningOn)
 	if err := http.ListenAndServe(listeningOn, nil); err != nil {
 		log.Printf("Failed listening on port %s: %s\n", listeningOn, err)
 	}

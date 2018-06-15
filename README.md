@@ -1,12 +1,12 @@
 EOS out-of-band block signer server
 -----------------------------------
 
-The EOS.IO Software's `nodeos` program signs blocks with keys it holds
-in memory.
+A simple and secure OOB block signing server for EOS.IO Software
+blockchains, from your friends at EOS Canada.
 
-Introduced slightly before th 1.0 release, is an Out-of-band signing
-method.  It involves setting up your configuration with something like
-this:
+Slightly before EOS.IO 1.0 release, Block.one introduced Out-of-band
+signing for block producers.  It involves setting up your
+configuration with something like this:
 
 ```
 signature-provider=EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV=KEOSD:http://localhost:6666/v1/wallet/sign_digest
@@ -14,9 +14,10 @@ keosd-provider-timeout=5   # default value is 5 ms
 ```
 
 This means that `nodeos` can sign blocks with the private key
-corresponding to `EOS6MR...W5CV` through a `keosd`-compatible program.
+corresponding to `EOS6MR...W5CV` through an external
+`keosd`-compatible program.
 
-`eos-blocksigner` is such a program, and integrates with `eosc`, the
+`eos-blocksigner` is such a program, and integrates with `eosc`'s vault, the
 wallet and command-line tool.
 
 WARNING: you do *NOT* want to expose that software to any public
@@ -26,6 +27,7 @@ actually sign *anything* with the associated private key. If you are
 using the same private key for `owner` and/or `active` permissions on
 some accounts (which you should *not*), then any transaction can be
 signed with the `/v1/wallet/sign_digest` endpoint.
+
 
 ## Two modes of operation
 
