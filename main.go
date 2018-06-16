@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"os"
 
@@ -78,6 +79,7 @@ func main() {
 	})
 
 	http.HandleFunc("/v1/wallet/sign_digest", func(w http.ResponseWriter, r *http.Request) {
+		t0 := time.Now()
 
 		var inputs []string
 		if err := json.NewDecoder(r.Body).Decode(&inputs); err != nil {
@@ -110,10 +112,11 @@ func main() {
 		w.WriteHeader(201)
 		err = json.NewEncoder(w).Encode(signed)
 		if err != nil {
-			fmt.Println("encoding error:", err)
+			fmt.Printf("encoding error: %s", err)
 		} else {
-			fmt.Println("done")
+			fmt.Printf("done")
 		}
+		fmt.Printf(" (%d us)\n", time.Now().Sub(t0)/time.Microsecond)
 	})
 
 	address := "127.0.0.1"
