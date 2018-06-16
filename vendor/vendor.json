@@ -9,12 +9,6 @@
 			"revisionTime": "2017-10-25T01:01:36Z"
 		},
 		{
-			"checksumSHA1": "naIi5J2qbIZpjdi1qJU5AcLiTT0=",
-			"path": "github.com/eoscanada/eos-blocksigner/eos-blocksigner",
-			"revision": "34d75ec100fd2eb86a1987118c872200c479745f",
-			"revisionTime": "2018-06-07T16:02:50Z"
-		},
-		{
 			"checksumSHA1": "NYWbnd35bByAcnMtakucjzqBOPc=",
 			"path": "github.com/eoscanada/eos-go",
 			"revision": "435a8b871541500d2155373242e6278e4005a0f8",

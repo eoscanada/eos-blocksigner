@@ -10,7 +10,7 @@ configuration with something like this:
 
 ```
 signature-provider=EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV=KEOSD:http://localhost:6666/v1/wallet/sign_digest
-keosd-provider-timeout=5   # default value is 5 ms
+keosd-provider-timeout=20   # default value is 5 ms
 ```
 
 This means that `nodeos` can sign blocks with the private key
