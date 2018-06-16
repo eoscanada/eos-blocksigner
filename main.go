@@ -123,6 +123,6 @@ func main() {
 	listeningOn := fmt.Sprintf("%s:%d", address, *port)
 	fmt.Printf("Listening for block signing operations on %s\n", listeningOn)
 	if err := http.ListenAndServe(listeningOn, nil); err != nil {
-		log.Printf("Failed listening on port %s: %s\n", listeningOn, err)
+		fmt.Printf("Failed listening on port %s: %s\n", listeningOn, err)
 	}
 }
