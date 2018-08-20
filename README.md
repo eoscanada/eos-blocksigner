@@ -1,6 +1,8 @@
 EOS out-of-band block signer server
 -----------------------------------
 
+[点击查看中文版](./README-cn.md)
+
 A simple and secure OOB block signing server for EOS.IO Software
 blockchains, from your friends at EOS Canada.
 
