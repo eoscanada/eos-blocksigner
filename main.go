@@ -5,7 +5,8 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"log"
+	"github.com/blendle/zapdriver"
+	"go.uber.org/zap"
 	"net/http"
 	"time"
 
@@ -21,35 +22,46 @@ var walletFile = flag.String("wallet-file", "", "wallet file")
 var kmsGCPKeypath = flag.String("kms-gcp-keypath", "", "cryptoKeys path to GCP's KMS system")
 var port = flag.Int("port", 6666, "listening port")
 
+var zlog = zap.NewNop()
+
+
 func main() {
 	flag.Parse()
 
+	SetupLogger()
+
 	if *keysFile != "" && *walletFile != "" {
-		log.Fatal("--keys-file and --wallet-file should not be use together")
+		zlog.Fatal("Error: --keys-file and --wallet-file should not be use together")
+		os.Exit(2)
 	}
 
 	if *keysFile == "" && *walletFile == "" {
-		log.Fatal("Require one of flags --keys-file and --wallet-file")
+		zlog.Fatal("Error: Require one of flags --keys-file and --wallet-file")
+		os.Exit(3)
 	}
 
 	var keyBag *eos.KeyBag
 	if *walletFile != "" {
 		if _, err := os.Stat(*walletFile); err != nil {
-			log.Fatalf("Error: wallet file %q missing", walletFile)
+			zlog.Fatal("Error: wallet file %q missing", zap.String("walletFile", *walletFile))
+			os.Exit(4)
 		}
 
 		vault, err := eosvault.NewVaultFromWalletFile(*walletFile)
 		if err != nil {
-			log.Fatalf("Error: loading vault: %s", err)
+			zlog.Fatal("Error: loading vault", zap.Error(err))
+			os.Exit(5)
 		}
 
 		boxer, err := eosvault.SecretBoxerForType(vault.SecretBoxWrap, *kmsGCPKeypath)
 		if err != nil {
-			log.Fatalf("Error: secret boxer: %s", err)
+			zlog.Fatal("Error: secret boxer", zap.Error(err))
+			os.Exit(6)
 		}
 
 		if err := vault.Open(boxer); err != nil {
-			log.Fatalf("Error: open vault: %s", err)
+			zlog.Fatal("Error: open vault", zap.Error(err))
+			os.Exit(7)
 		}
 
 		keyBag = vault.KeyBag
@@ -59,7 +71,8 @@ func main() {
 		keyBag = eos.NewKeyBag()
 
 		if err := keyBag.ImportFromFile(*keysFile); err != nil {
-			log.Fatalf("Error: import keys from file: %s", err)
+			zlog.Fatal("Error: import keys from file", zap.Error(err))
+			os.Exit(8)
 		}
 	}
 
@@ -68,7 +81,7 @@ func main() {
 	})
 
 	http.HandleFunc("/v1/wallet/get_public_keys", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Handling get_public_keys")
+		zlog.Info("Handling get_public_keys")
 
 		var out []string
 		for _, key := range keyBag.Keys {
@@ -83,46 +96,66 @@ func main() {
 
 		var inputs []string
 		if err := json.NewDecoder(r.Body).Decode(&inputs); err != nil {
-			fmt.Println("sign_digest: error:", err)
+			zlog.Error("Error: sign_digest", zap.Error(err))
 			http.Error(w, "couldn't decode input params", 500)
 			return
 		}
 
 		digest, err := hex.DecodeString(inputs[0])
 		if err != nil {
-			fmt.Println("digest decode: error:", err)
+			zlog.Error("Error: digest decode", zap.Error(err))
 			http.Error(w, "couldn't decode digest", 500)
 		}
 
 		pubKey, err := ecc.NewPublicKey(inputs[1])
 		if err != nil {
-			fmt.Println("public key: error:", err)
+			zlog.Error("Error: public key", zap.Error(err))
 			http.Error(w, "couldn't decode public key", 500)
 		}
 
 		signed, err := keyBag.SignDigest(digest, pubKey)
 		if err != nil {
-			fmt.Println("signing: error:", err)
+			zlog.Error("Error: signing", zap.Error(err))
 			http.Error(w, "signing error", 500)
 			return
 		}
 
-		fmt.Printf("Signing digest %q with %s... ", hex.EncodeToString(digest), pubKey)
+		zlog.Info("Signing digest", zap.String("digest", hex.EncodeToString(digest)), zap.String("pubKey", pubKey.String()))
 
 		w.WriteHeader(201)
 		err = json.NewEncoder(w).Encode(signed)
+		elapsedTime := time.Since(t0)
 		if err != nil {
-			fmt.Printf("encoding error: %s", err)
+			zlog.Error("Error: encoding", zap.Error(err), zap.Duration("elapsedTime", elapsedTime))
 		} else {
-			fmt.Printf("done")
+			zlog.Info("done", zap.Duration("elapsedTime", elapsedTime))
 		}
-		fmt.Printf(" (%d us)\n", time.Now().Sub(t0)/time.Microsecond)
 	})
 
 	address := "127.0.0.1"
 	listeningOn := fmt.Sprintf("%s:%d", address, *port)
-	fmt.Printf("Listening for block signing operations on %s\n", listeningOn)
+	zlog.Info("Listening for block signing operations", zap.String("address", address), zap.Int("port", *port))
 	if err := http.ListenAndServe(listeningOn, nil); err != nil {
 		fmt.Printf("Failed listening on port %s: %s\n", listeningOn, err)
+		zlog.Fatal("Failed listening", zap.Error(err), zap.String("listeningOn", listeningOn))
 	}
+}
+
+
+func errorCheck(prefix string, err error) {
+	if err != nil {
+		zlog.Fatal(prefix, zap.Error(err))
+		os.Exit(1)
+	}
+}
+
+
+func SetupLogger() {
+	var err error
+	if _, err = os.Stat("/.dockerenv"); !os.IsNotExist(err) {
+		zlog, err = zapdriver.NewProduction()
+	} else {
+		zlog, err = zap.NewDevelopment()
+	}
+	errorCheck("setting up zap logger", err)
 }
